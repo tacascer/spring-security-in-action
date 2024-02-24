@@ -1,12 +1,12 @@
 package com.github.tacascer.springsecurityinaction.controllers
 
+import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RestController
 
-@RestController
+@Controller
 class HelloController {
-    @GetMapping("/hello")
+    @GetMapping("/home")
     fun hello(): String {
-        return "Hello!"
+        return "home.html"
     }
 }
