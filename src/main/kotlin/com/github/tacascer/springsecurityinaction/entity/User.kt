@@ -9,7 +9,7 @@ class User(
     var username: String,
     var password: String,
     @Enumerated(EnumType.STRING)
-    var encryptionAlgorithm: EncryptionAlgorithm,
+    var algorithm: EncryptionAlgorithm,
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     var authorities: MutableList<Authority>
 )

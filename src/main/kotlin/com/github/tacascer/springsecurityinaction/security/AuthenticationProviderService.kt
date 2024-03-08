@@ -21,7 +21,7 @@ class AuthenticationProviderService(
         val username = authentication.name
         val password = authentication.credentials.toString()
         val user = userDetailsService.loadUserByUsername(username)
-        return when (user.user.encryptionAlgorithm) {
+        return when (user.user.algorithm) {
             BCRYPT -> checkPassword(password, user, bCryptPasswordEncoder)
             SCRYPT -> checkPassword(password, user, sCryptPasswordEncoder)
         }
