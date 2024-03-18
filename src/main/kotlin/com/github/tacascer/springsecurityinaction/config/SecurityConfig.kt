@@ -13,7 +13,7 @@ import org.springframework.security.web.SecurityFilterChain
 
 @Configuration
 @EnableWebSecurity
-class ProjectConfig {
+class SecurityConfig {
     @Bean
     fun userDetailsService(): UserDetailsService {
         val manager = InMemoryUserDetailsManager()
@@ -40,8 +40,12 @@ class ProjectConfig {
     fun httpSecurity(http: HttpSecurity): SecurityFilterChain {
         http {
             httpBasic { }
-            authorizeHttpRequests {
-                authorize(anyRequest, hasRole("ADMIN"))
+            authorizeRequests {
+                authorize("/product/{code:^[0-9]*$}", permitAll)
+                authorize(anyRequest, denyAll)
+            }
+            csrf {
+                disable()
             }
         }
         return http.build()
