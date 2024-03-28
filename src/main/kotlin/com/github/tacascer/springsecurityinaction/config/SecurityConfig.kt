@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.password.NoOpPasswordEncoder
 import org.springframework.security.provisioning.InMemoryUserDetailsManager
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter
 
 @Configuration
 @EnableWebSecurity
@@ -37,15 +38,11 @@ class SecurityConfig {
     fun passwordEncoder() = NoOpPasswordEncoder.getInstance()!!
 
     @Bean
-    fun httpSecurity(http: HttpSecurity): SecurityFilterChain {
+    fun httpSecurity(http: HttpSecurity, filter: StaticKeyAuthenticationFilter): SecurityFilterChain {
         http {
-            httpBasic { }
+            addFilterAt<BasicAuthenticationFilter>(filter)
             authorizeRequests {
-                authorize("/product/{code:^[0-9]*$}", permitAll)
-                authorize(anyRequest, denyAll)
-            }
-            csrf {
-                disable()
+                authorize(anyRequest, permitAll)
             }
         }
         return http.build()
