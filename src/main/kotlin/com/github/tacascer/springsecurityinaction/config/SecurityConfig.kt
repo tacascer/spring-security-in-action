@@ -1,5 +1,6 @@
 package com.github.tacascer.springsecurityinaction.config
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -10,7 +11,10 @@ import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.password.NoOpPasswordEncoder
 import org.springframework.security.provisioning.InMemoryUserDetailsManager
 import org.springframework.security.web.SecurityFilterChain
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter
+import org.springframework.web.cors.CorsConfiguration
+import org.springframework.web.cors.CorsConfigurationSource
+
+private val logger = KotlinLogging.logger {}
 
 @Configuration
 @EnableWebSecurity
@@ -18,18 +22,12 @@ class SecurityConfig {
     @Bean
     fun userDetailsService(): UserDetailsService {
         val manager = InMemoryUserDetailsManager()
-        val user1 = User.withUsername("john")
+        val user1 = User.withUsername("mary")
             .password("12345")
-            .roles("ADMIN")
-            .build()
-
-        val user2 = User.withUsername("jane")
-            .password("12345")
-            .roles("MANAGER")
+            .roles("READ")
             .build()
 
         manager.createUser(user1)
-        manager.createUser(user2)
 
         return manager
     }
@@ -38,9 +36,19 @@ class SecurityConfig {
     fun passwordEncoder() = NoOpPasswordEncoder.getInstance()!!
 
     @Bean
-    fun httpSecurity(http: HttpSecurity, filter: StaticKeyAuthenticationFilter): SecurityFilterChain {
+    fun httpSecurity(http: HttpSecurity): SecurityFilterChain {
         http {
-            addFilterAt<BasicAuthenticationFilter>(filter)
+            csrf {
+                disable()
+            }
+            cors {
+                configurationSource = CorsConfigurationSource {
+                    val corsConfiguration = CorsConfiguration()
+                    corsConfiguration.allowedOrigins = listOf("http://localhost:8080")
+                    corsConfiguration.allowedMethods = listOf("GET", "POST")
+                    corsConfiguration
+                }
+            }
             authorizeRequests {
                 authorize(anyRequest, permitAll)
             }
