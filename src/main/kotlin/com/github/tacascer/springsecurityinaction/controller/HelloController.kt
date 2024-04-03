@@ -1,26 +1,36 @@
 package com.github.tacascer.springsecurityinaction.controller
 
+import com.github.tacascer.springsecurityinaction.entities.Otp
+import com.github.tacascer.springsecurityinaction.entities.User
+import com.github.tacascer.springsecurityinaction.service.UserService
 import io.github.oshai.kotlinlogging.KotlinLogging
-import org.springframework.stereotype.Controller
-import org.springframework.web.bind.annotation.CrossOrigin
-import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.ResponseBody
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RestController
 
 private val logger = KotlinLogging.logger {}
 
-@Controller
-class HelloController {
-    @GetMapping("/")
-    fun main(): String {
-        return "main.html"
+@RestController
+class AuthController(private val userService: UserService) {
+
+    @PostMapping("/user/add")
+    fun addUser(@RequestBody user: User) {
+        userService.addUser(user)
     }
 
-    @PostMapping("/test")
-    @ResponseBody
-    @CrossOrigin("http://localhost:8080")
-    fun test(): String {
-        logger.info { "Test method called" }
-        return "HELLO"
+    @PostMapping("/user/auth")
+    fun auth(@RequestBody user: User) {
+        userService.auth(user)
+    }
+
+    @PostMapping("/otp/check")
+    fun check(@RequestBody otp: Otp): ResponseEntity<Void> {
+        return if (userService.check(otp)) {
+            ResponseEntity.ok().build()
+        } else {
+            ResponseEntity(HttpStatus.FORBIDDEN)
+        }
     }
 }

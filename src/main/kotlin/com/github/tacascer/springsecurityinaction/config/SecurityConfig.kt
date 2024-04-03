@@ -8,11 +8,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.invoke
 import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetailsService
-import org.springframework.security.crypto.password.NoOpPasswordEncoder
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.provisioning.InMemoryUserDetailsManager
 import org.springframework.security.web.SecurityFilterChain
-import org.springframework.web.cors.CorsConfiguration
-import org.springframework.web.cors.CorsConfigurationSource
 
 private val logger = KotlinLogging.logger {}
 
@@ -33,21 +31,13 @@ class SecurityConfig {
     }
 
     @Bean
-    fun passwordEncoder() = NoOpPasswordEncoder.getInstance()!!
+    fun passwordEncoder() = BCryptPasswordEncoder();
 
     @Bean
     fun httpSecurity(http: HttpSecurity): SecurityFilterChain {
         http {
             csrf {
                 disable()
-            }
-            cors {
-                configurationSource = CorsConfigurationSource {
-                    val corsConfiguration = CorsConfiguration()
-                    corsConfiguration.allowedOrigins = listOf("http://localhost:8080")
-                    corsConfiguration.allowedMethods = listOf("GET", "POST")
-                    corsConfiguration
-                }
             }
             authorizeRequests {
                 authorize(anyRequest, permitAll)
